@@ -1,62 +1,17 @@
 import os
-import re
-import mysql.connector
+import json
 from dotenv import load_dotenv
 from groq import Groq
+import queries 
+from static_intents import static_responses
 
-# load env vars
+
+# Load env vars
 load_dotenv()
 API_KEY = os.getenv("GROQ_API_KEY")
 
-# init client with key
+# Init Groq client
 client = Groq(api_key=API_KEY)
-
-# connect to MySQL
-db = mysql.connector.connect(
-    host=os.getenv("DB_HOST"),
-    user=os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD"),
-    database=os.getenv("DB_NAME")
-)
-cursor = db.cursor()
-
-def run_query(sql: str):
-    try:
-        cursor.execute(sql)
-        rows = cursor.fetchall()
-        if not rows:
-            # detect which table the query is about
-            sql_lower = sql.lower()
-            if "from events" in sql_lower:
-                return "There are no upcoming events at the moment."
-            elif "from tournaments" in sql_lower:
-                return "There are no upcoming tournaments right now."
-            elif "from products" in sql_lower:
-                return "No products are currently available."
-            elif "from products_reviews" in sql_lower:
-                return "No product reviews found yet."
-            elif "from user_roles" in sql_lower:
-                return "That user doesn’t seem to have a role assigned."
-            elif "from chat_room_members" in sql_lower:
-                return "There are no members in this chat room yet."
-            elif "from event_attendances" in sql_lower:
-                return "No one has registered attendance for this event yet."
-            elif "from tournaments_participations" in sql_lower:
-                return "No one has registered for this tournament yet."
-            else:
-                return "No relevant data found."
-
-        # format output into text
-        columns = [desc[0] for desc in cursor.description]
-        results = [dict(zip(columns, row)) for row in rows]
-
-        if len(results) == 1:
-            return ", ".join(f"{k}: {v}" for k, v in results[0].items())
-        else:
-            return "\n".join([", ".join(f"{k}: {v}" for k, v in r.items()) for r in results])
-    except Exception as e:
-        return f"Sorry, I couldn’t run that query. Error: {e}"
-
 
 def chat_with_llm(prompt: str):
     completion = client.chat.completions.create(
@@ -65,29 +20,79 @@ def chat_with_llm(prompt: str):
             {"role": "system", "content": open("system_prompt.txt").read()},
             {"role": "user", "content": prompt},
         ],
-        temperature=0.7,
-        max_completion_tokens=512,
-        top_p=1,
-        stream=False,
-        stop=None,
+        temperature=0,
+        max_completion_tokens=256,
     )
     return completion.choices[0].message.content
 
+
+
+def format_with_model(intent: str, results):
+    if results == "None currently":
+        return results
+    
+    prompt = f"""
+    You are a helpful assistant. 
+    The user asked for: {intent}.
+    Here are the raw database results: {results}
+    Please format this into a natural, user-friendly response, make it in bullet points and add emojies 
+    like use the emojis that represnt the point as the bullet point.
+    """
+    return chat_with_llm(prompt)
+
+
+
+def handle_intent(intent: str, entities: dict = None):
+    # If it's static info
+    if intent in static_responses:
+        return static_responses[intent]
+
+    # If it's DB-based
+    sql = queries.get_query(intent)
+    return format_with_model(intent,sql)
+
+
 if __name__ == "__main__":
     print("Chatbot ready! Type 'exit' to quit.\n")
+
     while True:
         user_input = input("You: ")
         if user_input.lower() in ["exit", "quit"]:
             print("LLM: Goodbye 👋")
             break
 
-        reply = chat_with_llm(user_input)
+        # Step 1: Ask LLM for intent & entities
+        intent_prompt = f"""
+        Extract the intent and any entities from this question.
+        If no database lookup is needed, set "intent" to "none".
+        Don't ever make up fake data.
+        Answer in JSON only. Example:
+        {{"intent": "next_event"}}
+        or
+        {{"intent": "none"}}
 
-        # check if LLM gave SQL query
-        sql_match = re.search(r"```sql\n(.*?)\n```", reply, re.DOTALL)
-        if sql_match:
-            sql_query = sql_match.group(1).strip()
-            results = run_query(sql_query)
-            print("LLM:", results)
-        else:
+        User: {user_input}
+        """
+        response = chat_with_llm(intent_prompt)
+
+        try:
+            parsed = json.loads(response)
+            intent = parsed.get("intent", "none")
+            entities = {k: v for k, v in parsed.items() if k != "intent"}
+        except Exception:
+            print("LLM: Sorry, I didn’t understand that. (Parsing error)")
+            continue
+
+        # Step 2: Handle database intent or fallback
+        if intent == "none":
+            # Just let LLM answer naturally
+            reply = chat_with_llm(user_input)
             print("LLM:", reply)
+        else:
+            results = handle_intent(intent, entities)
+            if results:
+                print("LLM:", results)
+            else:
+                # Fallback: LLM answers normally
+                reply = chat_with_llm(user_input)
+                print("LLM:", reply)
