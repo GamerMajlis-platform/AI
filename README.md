@@ -114,6 +114,6 @@ Your Gradio UI will launch locally, ready for testing.
 
 ### Database Query Flow
 
-> Dynamic question → intent from queries → query → LLM formatting → response
-> Static question → intent from ststic → query → LLM formatting → response
-> Other question → LLM response 
+> * Dynamic question → intent from queries → query → LLM formatting → response
+  * Static question → intent from ststic → query → LLM formatting → response
+  * Other question → LLM response 
