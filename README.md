@@ -20,7 +20,6 @@ Here’s a breakdown of the files and their purpose:
 | [`chatbot.py`](./chatbot.py)               | Main chatbot script that initializes without the Gradio UI and connects the system.      |
 | [`db_connection.py`](./db_connection.py)   | Database connection logic for dynamic queries.                                   |
 | [`queries.py`](./queries.py)               | Maps intents to SQL queries for dynamic platform questions.                      |
-| [`schema.py`](./schema.py)                 | Database schema reference for queries and security.                              |
 | [`static_intents.py`](./static_intents.py) | Dictionary of **static intents** and their responses.                            |
 | [`system_prompt.txt`](./system_prompt.txt) | LLM prompt that sets its **role and rules**, including “no fake data.”           |
 | `README.md`                                | Documentation for the project (this file).                                       |
