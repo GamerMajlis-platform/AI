@@ -1,4 +1,4 @@
-# 🎮 GamerMajlis Chatbot
+# GamerMajlis Chatbot
 
 Welcome to the **GamerMajlis Chatbot** repository! This project is a **mini-RAG-based chatbot system** designed for the gaming platform **GamerMajlis**, aimed at enhancing user experience and answering platform-related questions efficiently.
 
