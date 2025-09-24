@@ -23,7 +23,6 @@ Here’s a breakdown of the files and their purpose:
 | [`queries.py`](./queries.py)               | Maps intents to SQL queries for dynamic platform questions.                      |
 | [`static_intents.py`](./static_intents.py) | Dictionary of **static intents** and their responses.                            |
 | [`system_prompt.txt`](./system_prompt.txt) | LLM prompt that sets its **role and rules**, including “no fake data.”           |
-| `README.md`                                | Documentation for the project (this file).                                       |
 
 ## 🚩 How the Chatbot Works
 
