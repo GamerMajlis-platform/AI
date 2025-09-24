@@ -17,7 +17,8 @@ Here’s a breakdown of the files and their purpose:
 
 | File / Folder                              | Description                                                                      |
 | ------------------------------------------ | -------------------------------------------------------------------------------- |
-| [`chatbot.py`](./chatbot.py)               | Main chatbot script that initializes without the Gradio UI and connects the system.      |
+| [`chatbot.py`](./chatbot.py)               | Main chatbot script that initializes without the Gradio UI and connects the system. |
+| [`chatbot_gradio.py`](./chatbot.py)        | Chatbot script that with the Gradio UI.                                           |
 | [`db_connection.py`](./db_connection.py)   | Database connection logic for dynamic queries.                                   |
 | [`queries.py`](./queries.py)               | Maps intents to SQL queries for dynamic platform questions.                      |
 | [`static_intents.py`](./static_intents.py) | Dictionary of **static intents** and their responses.                            |
