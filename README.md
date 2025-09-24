@@ -76,9 +76,6 @@ Follow these steps to get the project running on your machine:
 # Clone the repository
 git clone https://github.com/GamerMajlis-platform/AI.git
 cd AI
-
-# Install dependencies
-pip install -r requirements.txt
 ```
 
 ### Configure Environment
