@@ -4,10 +4,8 @@ from db_connection import run_query
 QUERIES = {
     # --- Tournaments ---
     "next_tournament": """
-        SELECT name, start_date
+        SELECT *
         FROM tournaments
-        WHERE start_date >= NOW()
-        ORDER BY start_date ASC
         LIMIT 1;
     """,
 
@@ -21,6 +19,11 @@ QUERIES = {
     "event_attendances": """
      SELECT * FROM 
      event_attendances
+     LIMIT 10;
+    """, 
+   "about_products": """
+     SELECT * FROM 
+     products
      LIMIT 10;
 """
 }

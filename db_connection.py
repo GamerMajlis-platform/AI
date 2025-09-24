@@ -24,6 +24,6 @@ def run_query(sql: str, params: tuple = ()):
     cursor.close()
     conn.close()
     if results == []:
-        return "None currently"
+        return "None"
     return results
 

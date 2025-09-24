@@ -26,10 +26,9 @@ def chat_with_llm(prompt: str):
     return completion.choices[0].message.content
 
 
-
 def format_with_model(intent: str, results):
-    if results == "None currently":
-        return results
+    if results == "None":
+        return "Ohhh...seems like there is none availabel at the momment:("
     
     prompt = f"""
     You are a helpful assistant. 
