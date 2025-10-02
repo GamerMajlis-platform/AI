@@ -49,6 +49,8 @@ The chatbot can handle **three main types of user questions**:
    * Questions that **don’t change**, e.g., “How do I change my password?”
    * Handled via a **predefined dictionary** called [**`static_intents.py`**](./static_intents.py).
    * LLM provides natural responses based on these static intents.
+     
+<img width="1673" height="328" alt="image" src="https://github.com/user-attachments/assets/3ffd2207-f389-4155-ad24-9c6f47464e3c" />
 
 ---
 
